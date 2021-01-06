@@ -1,4 +1,6 @@
+const { promisify } = require('util');
 const registrationModel = require('./../models/registration'); 
+const ENV = 'development';
 const {
     statusCode,
     returnErrorJsonResponse,
@@ -13,14 +15,29 @@ const signToken = (email, role) =>{
         expiresIn: "90d"
     });
 }
+
+const createSendToken = (user, res) =>{
+  const token = signToken(user[0].email, user[0].role);
+
+  const cookieOptions = {
+    expires: new Date(Date.now() + 90*24*60*60*1000 ),
+    httpOnly: true
+  }
+
+  if(ENV === 'production') cookieOptions.secure = true;
+  return res.cookie('jwt', token, cookieOptions);
+  
+  //res.redirect('/dashboard');
+  
+}
+
+
 exports.registration = async(req,res) => {
     try {
 
-        const newUser = await registrationModel.create(req.body);
-        console.log(newUser);
+        const newUser = await registrationModel.create(req.body)
 
         const token = signToken(newUser.email ,newUser.role);
-        console.log(token);
         if(newUser){
             res.set( {
                 'token': token
@@ -63,7 +80,6 @@ exports.login = async (req,res) => {
         const user = await registrationModel.find({email: email}).select('+password');
 
         if(!user || !(await bcrypt.compare(password, user[0].password))){
-            console.log("here1")
             return res
             .status(statusCode.unauthorized)
             .json(
@@ -77,20 +93,21 @@ exports.login = async (req,res) => {
         }
 
         ///send token
-        console.log("here");
-        const token = signToken(user[0].email, user[0].role);
-        console.log(token);
+        createSendToken(user, res);
+        // const token = signToken(user[0].email, user[0].role);
+        // console.log(token);
 
-        return res
-        .status(statusCode.success)
-        .json(
-            returnJsonResponse(
-            statusCode.success,
-            "success",
-            "Logged in",
-            token
-          )
-        );
+        return res.redirect('/dashboard');
+        // return res
+        // .status(statusCode.success)
+        // .json(
+        //     returnJsonResponse(
+        //     statusCode.success,
+        //     "success",
+        //     "Logged in",
+        //     token
+        //   )
+        // );
     } catch (error) {
         return res
         .status(statusCode.bad)
@@ -104,3 +121,78 @@ exports.login = async (req,res) => {
         );        
     }
 }
+
+
+exports.protect = async (req,res,next) => {
+  try{
+    let token;
+
+    if(req.cookies.jwt){
+      token = req.cookies.jwt;
+    }
+
+    if(!token){
+      return res
+      .status(statusCode.unauthorized)
+      .json(
+        returnErrorJsonResponse(
+          statusCode.unauthorized,
+          "fail",
+          "Not logged in",
+          error
+        )
+      );
+    }
+
+    //verify
+    const decoded = await promisify(jwt.verify)(token, "secretkey23456");
+
+    ///check if user exits
+    const freshUser = await registrationModel.find({email: decoded.email});
+    if(!freshUser){
+      return res
+      .status(statusCode.unauthorized)
+      .json(
+        returnErrorJsonResponse(
+          statusCode.unauthorized,
+          "fail",
+          "User Doesnt exist anymore",
+          error
+        )
+      );      
+    }
+
+    ////Grant Access
+    req.user = freshUser[0];
+    next();
+  }catch{
+    return res
+    .status(statusCode.bad)
+    .json(
+      returnErrorJsonResponse(
+        statusCode.bad,
+        "fail",
+        "Something went wrong, Please try again",
+        error
+      )
+    );
+  }
+}
+
+exports.restrictTo = (...roles) =>{
+  return (req,res,next) =>{
+    if(!roles.includes(req.user.role)) {
+      return res
+      .status(statusCode.unauthorized)
+      .json(
+        returnErrorJsonResponse(
+          statusCode.unauthorized,
+          "fail",
+          "You do not have permission to perform this action",
+          "You do not have permission to perform this action"
+        )
+      );      
+    }
+    next();
+  };
+};

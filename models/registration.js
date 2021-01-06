@@ -33,7 +33,8 @@ const registrationSchema = new schema({
     },
 
     role: {
-        type: String
+        type: String,
+        required: true
     },
 
     onleave: {

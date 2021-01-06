@@ -4,6 +4,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const path = require('path');
 const helmet = require("helmet");
+const cookieParser = require('cookie-parser')
 
 // Logs Cache controlling Https
 
@@ -13,6 +14,7 @@ app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(helmet());
+app.use(cookieParser())
 
 // const static_path = path.join(__dirname, '/public/images');
 // console.log(__dirname, '/views/images');

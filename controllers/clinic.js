@@ -37,7 +37,7 @@ exports.addClinic = async (req,res) =>{
 
 exports.getClinic = async (req,res) => {
     try {
-        const clinic = clinicModel.find();
+        const clinic = await clinicModel.find({});
         return res
             .status(statusCode.success)
             .json(
