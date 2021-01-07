@@ -10,7 +10,11 @@ router.get('/', (req,res) =>{
 
 router.post('/login', login);
 router.get('/login', (req,res) =>{
-    res.render("login");
+    res.cookie('jwt', 'loggedout', {
+        expires: new Date(Date.now() + 10*1000 ),
+        httpOnly: true
+      });
+    return res.render("login");
 });
 
 module.exports = router;

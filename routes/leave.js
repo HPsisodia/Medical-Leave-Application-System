@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 
-const { applyLeave, addmedical, onleave, pendingJob } = require("../controllers/leave");
+const { applyLeave, addmedical, onleave, pendingJob, showMedical, seeMedical, medicalapproved } = require("../controllers/leave");
 const { protect, restrictTo } = require('./../controllers/authcontroller');
 
 const multerStorage = multer.diskStorage({
@@ -40,5 +40,13 @@ router.get('/pendingjobs', protect, restrictTo('admin'), (req,res) => {
     res.set("Content-Security-Policy", "default-src *; style-src 'self' http://* 'unsafe-inline'; script-src 'self' http://* 'unsafe-inline' 'unsafe-eval'")
     .render("pendingjob");
 })
+
+router.get('/show-employees-medical', protect, restrictTo('admin'), showMedical);
+router.get('/approvemedical', protect, restrictTo('admin'), (req,res) => {
+    res.set("Content-Security-Policy", "default-src *; style-src 'self' http://* 'unsafe-inline'; script-src 'self' http://* 'unsafe-inline' 'unsafe-eval'")
+    .render("approvemedical");
+})
+router.get('/seemedical/:id', protect, restrictTo('admin'), seeMedical);
+router.get("/medicalapproved/:id", protect, restrictTo('admin'), medicalapproved);
 
 module.exports = router;

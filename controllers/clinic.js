@@ -9,16 +9,7 @@ const {
 exports.addClinic = async (req,res) =>{
     try {
         const clinic = await clinicModel.create(req.body);
-        return res
-        .status(statusCode.success)
-        .json(
-            returnJsonResponse(
-            statusCode.success,
-            "success",
-            "Clinic added",
-            clinic
-          )
-        );        
+        return res.render("clinicadded");        
     } catch (error) {
         return res
         .status(statusCode.bad)
@@ -26,7 +17,7 @@ exports.addClinic = async (req,res) =>{
           returnErrorJsonResponse(
             statusCode.bad,
             "fail",
-            "Something went wrong, Please try again",
+            "Something went wrong, Please try again. Check internet connection",
             error
           )
         );        

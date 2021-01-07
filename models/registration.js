@@ -35,34 +35,6 @@ const registrationSchema = new schema({
     role: {
         type: String,
         required: true
-    },
-
-    onleave: {
-        type: Boolean,
-        default: false
-    },
-
-    leaveDuration: {
-        from: {
-            type: String
-        },
-        to: {
-            type: String
-        }
-    },
-
-    medicalCertificate: {
-        type: String,
-        default: "None"
-    },
-
-    medicalCertificateApproved: {
-        type: Boolean
-    },
-
-    pendingJob: {
-        type: String,
-        default: "None"
     }
 });
 

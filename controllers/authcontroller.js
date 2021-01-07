@@ -51,7 +51,7 @@ exports.registration = async(req,res) => {
               returnErrorJsonResponse(
                 statusCode.bad,
                 "fail",
-                "Something went wrong, couldnt save user",
+                "Something went wrong, couldnt save user. Check internet connection",
                 error
               )
             );            
@@ -79,17 +79,8 @@ exports.login = async (req,res) => {
         const {email, password} = req.body;
         const user = await registrationModel.find({email: email}).select('+password');
 
-        if(!user || !(await bcrypt.compare(password, user[0].password))){
-            return res
-            .status(statusCode.unauthorized)
-            .json(
-              returnErrorJsonResponse(
-                statusCode.unauthorized,
-                "fail",
-                "Incorrect email or password",
-                error
-              )
-            );           
+        if(user[0] === undefined || !(await bcrypt.compare(password, user[0].password))){
+            return res.render("404login")           
         }
 
         ///send token
@@ -109,16 +100,7 @@ exports.login = async (req,res) => {
         //   )
         // );
     } catch (error) {
-        return res
-        .status(statusCode.bad)
-        .json(
-          returnErrorJsonResponse(
-            statusCode.bad,
-            "fail",
-            "Something went wrong, Please try again",
-            error
-          )
-        );        
+        return res.render("404login")        
     }
 }
 
@@ -131,6 +113,9 @@ exports.protect = async (req,res,next) => {
       token = req.cookies.jwt;
     }
 
+    if(token === "loggedout"){
+      return res.render("pleaselogin");
+    }
     if(!token){
       return res
       .status(statusCode.unauthorized)
@@ -182,16 +167,7 @@ exports.protect = async (req,res,next) => {
 exports.restrictTo = (...roles) =>{
   return (req,res,next) =>{
     if(!roles.includes(req.user.role)) {
-      return res
-      .status(statusCode.unauthorized)
-      .json(
-        returnErrorJsonResponse(
-          statusCode.unauthorized,
-          "fail",
-          "You do not have permission to perform this action",
-          "You do not have permission to perform this action"
-        )
-      );      
+      return res.render("notallowed");      
     }
     next();
   };

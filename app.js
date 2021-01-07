@@ -6,6 +6,8 @@ const path = require('path');
 const helmet = require("helmet");
 const cookieParser = require('cookie-parser')
 
+global.appRoot = path.resolve(__dirname);
+
 // Logs Cache controlling Https
 
 const app = express();
