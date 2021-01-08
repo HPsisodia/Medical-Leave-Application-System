@@ -10,7 +10,7 @@ Already registered Users:
 Admin - 1) Email/username - ritish@gmail.com, Password - ritish1234
 
 Employee - 1) Email/username - himesh@gmail.com, Password - himesh1234
-            1) Email/username - pooja@gmail.com, Password - pooja1234
+            2) Email/username - pooja@gmail.com, Password - pooja1234
 
 You can also register more users as admin or employee
 
