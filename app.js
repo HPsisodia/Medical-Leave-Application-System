@@ -35,7 +35,7 @@ app.use("/", leaveRoute);
 app.use("/", dashboardRoute);
 
 const PORT = process.env.PORT || 3000;
-const DBURL = "mongodb+srv://hardik:calamity2020@projects.eaf9h.mongodb.net/leaveapp?retryWrites=true&w=majority"
+const DBURL = "" ////add mongo database URI here
 
 mongoose
   .connect(DBURL, {
