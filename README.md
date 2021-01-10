@@ -5,6 +5,8 @@ The app runs on port-"3000" at localhost i.e. localhost:3000/ (for register) and
 Requirement:
 1) Make sure to have a internet connection as some pages use online scripts and Mongo Atlas as database
 
+2) Add your mongodb URI in app.js "DBURL" 
+
 Already registered Users:
 
 Admin - 1) Email/username - ritish@gmail.com, Password - ritish1234
