@@ -1,5 +1,7 @@
 const { promisify } = require('util');
 const registrationModel = require('./../models/registration'); 
+require("dotenv").config();
+
 const ENV = 'development';
 const {
     statusCode,
@@ -11,7 +13,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
 const signToken = (email, role) =>{
-    return jwt.sign({email: email, role: role}, "secretkey23456", {
+    return jwt.sign({email: email, role: role}, process.env.SECRET_KEY, {
         expiresIn: "90d"
     });
 }
@@ -130,7 +132,7 @@ exports.protect = async (req,res,next) => {
     }
 
     //verify
-    const decoded = await promisify(jwt.verify)(token, "secretkey23456");
+    const decoded = await promisify(jwt.verify)(token, process.env.SECRET_KEY);
 
     ///check if user exits
     const freshUser = await registrationModel.find({email: decoded.email});

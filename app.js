@@ -10,6 +10,8 @@ global.appRoot = path.resolve(__dirname);
 
 // Logs Cache controlling Https
 
+require("dotenv").config();
+
 const app = express();
 
 app.use(bodyParser.json());
@@ -35,7 +37,7 @@ app.use("/", leaveRoute);
 app.use("/", dashboardRoute);
 
 const PORT = process.env.PORT || 3000;
-const DBURL = "" ////add mongo database URI here
+const DBURL = process.env.DBURL ////add mongo database URI here
 
 mongoose
   .connect(DBURL, {
